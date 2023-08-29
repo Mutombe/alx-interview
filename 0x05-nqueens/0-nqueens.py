@@ -1,57 +1,63 @@
-import sys
+#!/usr/bin/python3
+"""
+    Solve the N Queens Problem
+    (See README for instruction)
+"""
 
-if len(sys.argv) != 2:
-    print("Usage: nqueens N")
-    sys.exit(1)
+from sys import argv
 
-# Get the value of N from the command line argument
-try:
-    N = int(sys.argv[1])
-except ValueError:
-    print("N must be a number")
-    sys.exit(1)
 
-# Check if N is at least 4
-if N < 4:
-    print("N must be at least 4")
-    sys.exit(1)
+def nQueens(n: int) -> None:
+    """
+        Finds all possible ways to place n queens on an
+        n x n board without them attacking each other
+    """
+    board = []
+    usedCols = set()
+    nDiagonals = set()
+    pDiagonals = set()
 
-def is_safe(row, col):
-    # Check if it is safe to place a queen at board[row][col]
-    for i in range(row):
-        if board[i][col] == 'Q' or board[i][col] == 'Q' or board[i][col] == 'Q':
-            return False
-    for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
-        if board[i][j] == 'Q':
-            return False
-    for i, j in zip(range(row, -1, -1), range(col, N)):
-        if board[i][j] == 'Q':
-            return False
-    return True
+    def backtrack(row: int) -> None:
+        """Prints all possible solution"""
+        if row == n:
+            print(board)
+            return
 
-def solve_nqueens(row):
-    # Recursive function to solve the N queens problem
-    if row == N:
-        print_solution()
-        return
+        for col in range(n):
+            if col in usedCols or col - row in nDiagonals\
+                    or col + row in pDiagonals:
+                continue
+            usedCols.add(col)
+            nDiagonals.add(col - row)
+            pDiagonals.add(col + row)
+            board.append([row, col])
 
-    for col in range(N):
-        if is_safe(row, col):
-            board[row][col] = 'Q'
-            solve_nqueens(row + 1)
-            board[row][col] = '.'
+            backtrack(row + 1)
 
-def print_solution():
-    # Print the current configuration of the board
-    for i in range(N):
-        row_str = ""
-        for j in range(N):
-            row_str += board[i][j] + " "
-        print(row_str.strip())
-    print()
+            usedCols.remove(col)
+            nDiagonals.remove(col - row)
+            pDiagonals.remove(col + row)
+            board.remove([row, col])
 
-# Create an empty board
-board = [["."] * N for i in range(N)]
+    backtrack(0)
 
-# Solve the N queens problem
-solve_nqueens(0)
+    # for row in board:
+    #     print(row)
+
+
+if __name__ == "__main__":
+    if len(argv) != 2:
+        print("Usage: nqueens N")
+        exit(1)
+
+    try:
+        N = int(argv[1])
+    except ValueError:
+        print("N must be a number")
+        exit(1)
+
+    if N < 4:
+        print("N must be at least 4")
+        exit(1)
+
+    nQueens(N)
