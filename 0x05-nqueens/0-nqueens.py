@@ -1,54 +1,57 @@
-#!/usr/bin/python3
-"""
-N queens
-"""
-
 import sys
 
 if len(sys.argv) != 2:
-    print('Usage: nqueens N')
-    exit(1)
+    print("Usage: nqueens N")
+    sys.exit(1)
 
+# Get the value of N from the command line argument
 try:
-    n_q = int(sys.argv[1])
+    N = int(sys.argv[1])
 except ValueError:
-    print('N must be a number')
-    exit(1)
+    print("N must be a number")
+    sys.exit(1)
 
-if n_q < 4:
-    print('N must be at least 4')
-    exit(1)
+# Check if N is at least 4
+if N < 4:
+    print("N must be at least 4")
+    sys.exit(1)
 
-
-def solve_nqueens(n):
-    '''self descriptive'''
-    if n == 0:
-        return [[]]
-    inner_solution = solve_nqueens(n - 1)
-    return [solution + [(n, i + 1)]
-            for i in range(n_q)
-            for solution in inner_solution
-            if safe_queen((n, i + 1), solution)]
-
-
-def attack_queen(square, queen):
-    '''self descriptive'''
-    (row1, col1) = square
-    (row2, col2) = queen
-    return (row1 == row2) or (col1 == col2) or\
-        abs(row1 - row2) == abs(col1 - col2)
-
-
-def safe_queen(sqr, queens):
-    '''self descriptive'''
-    for queen in queens:
-        if attack_queen(sqr, queen):
+def is_safe(row, col):
+    # Check if it is safe to place a queen at board[row][col]
+    for i in range(row):
+        if board[i][col] == 'Q' or board[i][col] == 'Q' or board[i][col] == 'Q':
+            return False
+    for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
+        if board[i][j] == 'Q':
+            return False
+    for i, j in zip(range(row, -1, -1), range(col, N)):
+        if board[i][j] == 'Q':
             return False
     return True
 
+def solve_nqueens(row):
+    # Recursive function to solve the N queens problem
+    if row == N:
+        print_solution()
+        return
 
-for answer in reversed(solve_nqueens(n_q)):
-    result = []
-    for p in [list(p) for p in answer]:
-        result.append([i - 1 for i in p])
-    print(result)
+    for col in range(N):
+        if is_safe(row, col):
+            board[row][col] = 'Q'
+            solve_nqueens(row + 1)
+            board[row][col] = '.'
+
+def print_solution():
+    # Print the current configuration of the board
+    for i in range(N):
+        row_str = ""
+        for j in range(N):
+            row_str += board[i][j] + " "
+        print(row_str.strip())
+    print()
+
+# Create an empty board
+board = [["."] * N for i in range(N)]
+
+# Solve the N queens problem
+solve_nqueens(0)
