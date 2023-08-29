@@ -1,6 +1,5 @@
 #!/usr/bin/python3
-"""
-The N queens puzzle
+"""N queens solution finder module.
 """
 import sys
 
